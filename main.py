@@ -1,8 +1,10 @@
+import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
-from mnist import load_mnist
-from PIL import Image, ImageDraw, ImageFont
+from fruit import *
+from mnist import *
 from network import *
+from trainer import *
 
 def open_file():
     r = tk.Tk()
@@ -10,26 +12,25 @@ def open_file():
     fpath = filedialog.askopenfilename()
     return fpath
 
-def img_preprocess(fpath):
-    img = Image.open(fpath)
-    x = np.array(img)
-    x = x.reshape(1, 784)
-    x = x.astype('float32')
-    x /= 255.0
-    return x
-
-(train_img, train_label), (test_img, test_label) = load_mnist(normalize=True)
-nw = network(input_size=784, hidden_size1=100, hidden_size2=50, output_size=10)
-nw.sgd(train_img, train_label, test_img, test_label, it_num=100000, showacc=False)
-
+(x_train, t_train), (x_test, t_test) = load_fruit()
+#(x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=False, one_hot_label=False)
+max_epochs = 10
+nw = network(input_dim=(3, 100, 100),
+                       conv_param={'filter_num': 30, 'filter_size': 5, 'pad': 0, 'stride': 1},
+                       hidden_size=50, output_size=34,
+                       weight_init_std=0.01)
+t = trainer(nw,
+            x_train, t_train, x_test, t_test,
+            epochs=max_epochs,
+            min_batch_size=100,
+            optimizer='adam', optimizer_param={'lr': 0.001})
+t.train()
 while 1:
     fpath = open_file()
     if not fpath:
         break
-    x = img_preprocess(fpath)
+    img = Image.open(fpath)
+    x = normalize(img)
+    x = x.reshape(1, 3, 100, 100)
     y = nw.predict(x)
-    print(fpath + " is " + str(np.argmax(y)))
-
-
-
-
+    print(fpath + " is " + train_data[np.argmax(y)][2])
