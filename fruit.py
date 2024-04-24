@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 
 zip_dst = "archive.zip"
+zip_dir = "fruit"
 train_dir = "fruit/train/train/"
 train_data = [
     ['Undefined', 0, '未定义'],
@@ -60,7 +61,7 @@ def load_fruit():
     t_test = []
     with zipfile.ZipFile(zip_dst, 'r') as f:
         print("unzip file " + zip_dst)
-        f.extractall()
+        f.extractall(zip_dir)
         print("unzip file " + zip_dst + " ok")
     for arr in train_data:
         dir = train_dir + arr[0]
