@@ -59,10 +59,11 @@ def load_fruit():
     t_train = []
     x_test = []
     t_test = []
-    with zipfile.ZipFile(zip_dst, 'r') as f:
-        print("unzip file " + zip_dst)
-        f.extractall(zip_dir)
-        print("unzip file " + zip_dst + " ok")
+    if not os.path.exists(zip_dir):
+        with zipfile.ZipFile(zip_dst, 'r') as f:
+            print("unzip file " + zip_dst)
+            f.extractall(zip_dir)
+            print("unzip file " + zip_dst + " ok")
     for arr in train_data:
         dir = train_dir + arr[0]
         key = arr[1]
